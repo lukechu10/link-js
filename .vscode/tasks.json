@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build uglify (NPM)",
+            "command": "npm run build:uglify",
+            "type": "shell",
+            "args": [],
+            "presentation": {
+                "reveal": "always"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Compile typescript",
+            "type": "shell",
+            "command": "tsc --watch",
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "group": "build"
+        }
+    ]
+}
