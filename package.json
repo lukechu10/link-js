@@ -1,6 +1,6 @@
 {
   "name": "linkjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Convert traditional websites to single page apps effortlessly",
   "dependencies": {
     "@types/jquery": "^3.3.31",

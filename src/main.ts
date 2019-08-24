@@ -1,9 +1,15 @@
 // check if jQuery is availible
-if (!$ || !jQuery) console.warn("This library requires jQuery to function. Please install jQuery");
+if ($ == undefined|| !jQuery == undefined) console.warn("This library requires jQuery to function. Please install jQuery");
+
+// trigger page load
+$(() => $(document).trigger("pageLoad"));
 
 class LinkInstance {
     // data members
     private options: LinkOptions;
+
+    // number of stylesheets loaded. All stylesheets must be loaded for html content to appear
+    private cssLoaded: number = 0;
 
     // methods
     constructor(options: object) {
@@ -11,6 +17,7 @@ class LinkInstance {
         const defaultValues: LinkOptions = {
             showProgressBar: true,
             progressBarQuery: "#link-progress-bar",
+            waitForCss: true,
             linkId: [],
             replaceHead: true
         }
@@ -102,48 +109,62 @@ class LinkInstance {
 
             // replace all head
             if (this.options.replaceHead) {
-                // replace head element
-                $("head").html(jqHead.html());
+                // send event on css loaded
+                this.cssLoaded = 0;
+
+                // add onclick attr to css
+                jqHead.find("link[rel='stylesheet']").attr("onload", "link.addCssLoaded()");
+
+                let totalCss: number = jqHead.find("link[rel='stylesheet']").length;
+                // mark head elements to remove
+                $("head").children().attr("link-head-old", "");
+                $("head").append(jqHead.html());
+                
+                $(document).on("cssOnLoad", () => {
+                    if (this.cssLoaded == totalCss) {
+                        $(document).trigger("cssFinishedLoad");
+                        // remove old head
+                        $("head>[link-head-old]").remove();
+                    }
+                });
             }
             else {
                 // update title
-                let temp:string|undefined = jqHead.find("title").text();
+                let temp: string | undefined = jqHead.find("title").text();
                 if (!temp) {
                     // find title in body
                     temp = jqBody.find("title").text();
-                    if(!temp) console.warn("Title element not found on requested page. Ignoring.")
+                    if (!temp) console.warn("Title element not found on requested page. Ignoring.")
                 }
                 document.title = temp || url;
+
+                // trigger event
+                $(document).trigger("cssFinishedLoad");
             }
 
-            // set content to data
-            //var html = $(data).filter('#content').html();
-            //$('#content').html(html);
-            //document.title = $(data).filter('title').text();
+            // body elements
+            $(document).on("cssFinishedLoad", () => {
+                for (let query of this.options.linkId) {
+                    // select query on dom
+                    let domElement = $(query);
+                    if (domElement.length == 0) {
+                        console.warn(`Element matching query "${query}" not found on dom. Ignoring element.`);
+                        continue;
+                    }
+                    // find html string in jqData
+                    let newElement = jqBody.find(query);
+                    if (newElement.length == 0) {
+                        console.warn(`Element matching query "${query}" not found in loaded page. Ignoring element.`);
+                        continue;
+                    }
 
-            for (let query of this.options.linkId) {
-                // select query on dom
-                let domElement = $(query);
-                if (domElement.length == 0) {
-                    console.warn(`Element matching query "${query}" not found on dom. Ignoring element.`);
-                    continue;
+                    // insert text
+                    domElement.html(newElement.html());
                 }
-                // find html string in jqData
-                let newElement = jqBody.find(query);
-                if (newElement.length == 0) {
-                    console.warn(`Element matching query "${query}" not found in loaded page. Ignoring element.`);
-                    continue;
-                }
 
-                // insert text
-                domElement.html(newElement.html());
-            }
-
-            // update scripts
-            //updateScriptList(getScriptList(data));
-
-            // trigger event functions:
-            // jqDocument.trigger("pageLoad");
+                // all content loaded
+                $(document).trigger("pageLoad");
+            });
 
             // delay for animations
             setTimeout(() => { $(progressBarQuery).attr("status", "done") }, 250);
@@ -152,4 +173,12 @@ class LinkInstance {
         return 0;
     }
 
+    /**
+     * This function will add the onclick attribute for every css stylesheet so that the html content is not loaded until the css is loaded
+     * @returns {void}
+     */
+    addCssLoaded(): void {
+        this.cssLoaded++;
+        $(document).trigger("cssOnLoad");
+    }
 }

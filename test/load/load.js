@@ -1,6 +1,6 @@
 $(() => {
-    var link = new LinkInstance({
-        // replaceHead: false,
+    window.link = new LinkInstance({
+        replaceHead: true,
         linkId: [
             ".content"
         ]
