@@ -3,6 +3,7 @@ $(() => {
         replaceHead: true,
         linkId: [
             ".content"
-        ]
+        ],
+        waitForCss: false
     });
 });
