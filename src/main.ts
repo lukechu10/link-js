@@ -9,7 +9,7 @@ class LinkInstance {
     private options: LinkOptions;
 
     // number of stylesheets loaded. All stylesheets must be loaded for html content to appear
-    private cssLoaded: number = 0;
+    private static cssLoaded: number = 0;
 
     // methods
     constructor(options: object) {
@@ -118,11 +118,11 @@ class LinkInstance {
             // replace all head
             if (this.options.replaceHead) {
                 // send event on css loaded
-                this.cssLoaded = 0;
+                LinkInstance.cssLoaded = 0;
 
                 // add onclick attr to css
                 if (this.options.waitForCss) {
-                    jqHead.find("link[rel='stylesheet']").attr("onload", "link.addCssLoaded()");
+                    jqHead.find("link[rel='stylesheet']").attr("onload", "LinkInstance.addCssLoaded()");
 
                     let totalCss: number = jqHead.find("link[rel='stylesheet']").length;
                     // mark head elements to remove
@@ -134,7 +134,7 @@ class LinkInstance {
                     }
 
                     $(document).on("cssOnLoad", () => {
-                        if (this.cssLoaded == totalCss) {
+                        if (LinkInstance.cssLoaded == totalCss) {
                             // remove old head
                             $("head>[link-head-old]").remove();
                             this.loadBody(data);
@@ -175,7 +175,7 @@ class LinkInstance {
      * @returns {void}
      */
     addCssLoaded(): void {
-        this.cssLoaded++;
+        LinkInstance.cssLoaded++;
         $(document).trigger("cssOnLoad");
     }
 
