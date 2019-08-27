@@ -42,6 +42,22 @@ class LinkInstance {
             console.info("Navigation occured: ", $(event.target).attr('href'));
             this.loadPage(<string>$(event.target).attr('href'));
         });
+
+
+        // navigate backwords
+        window.onpopstate = (event: PopStateEvent) => {
+            this.loadPage(event.state, false);
+        }
+    }
+
+    /**
+     * Executes function after link content has loaded
+     * @param {function} handler function to be executed
+     */
+    onLoad = (handler: Function) => {
+        $(document).one("pageLoad", event => {
+            handler(event);
+        });
     }
 
     /**
@@ -62,7 +78,7 @@ class LinkInstance {
     /**
      * @returns {number} the status code of the requested page
      */
-    async loadPage(url: string) {
+    async loadPage(url: string, updateHistory: boolean = true) {
         // remove progress bar done attribute 
         const progressBarQuery = this.options.progressBarQuery;
         $(progressBarQuery).attr("status", "waiting");
@@ -110,9 +126,6 @@ class LinkInstance {
             });
             // remove all nodes in remove
             remove.remove();
-
-            // history api
-            history.pushState(url, document.title, url);
 
             // styles
             $(progressBarQuery).css('width', '105%');
@@ -167,6 +180,14 @@ class LinkInstance {
             // delay for animations
             setTimeout(() => { $(progressBarQuery).attr("status", "done") }, 250);
             setTimeout(() => { $(progressBarQuery).css('width', '0%'); }, 600);
+
+            if (updateHistory) {
+                // history api
+                history.pushState(url, document.title, url);
+            }
+            else {
+                history.replaceState(url, document.title, url);
+            }
         });
         return 0;
     }
@@ -176,7 +197,7 @@ class LinkInstance {
      * Only use this function if waitForCss == true
      * @returns {void}
      */
-    addCssLoaded(): void {
+    static addCssLoaded(): void {
         LinkInstance.cssLoaded++;
         $(document).trigger("cssOnLoad");
     }
@@ -224,11 +245,5 @@ class LinkInstance {
 
         // all content loaded
         $(document).trigger("pageLoad");
-    }
-
-    onLoad = (handler: Function) => {
-        $(document).one("pageLoad", event => {
-            handler(event);
-        });
     }
 }
