@@ -27,12 +27,14 @@ class LinkInstance {
         this.options = actual;
 
         // create progress bar on the dom if it does not exist
-        if ($(this.options.progressBarQuery).length == 0) {
-            // progress bar does not exist, add default progress bar at the beginning of body
-            const progressBarHtml: JQuery = $('<div id="link-progress-bar"></div>').attr("status", "waiting");
-            $('body').prepend(progressBarHtml);
+        $(() => {
+            if ($(this.options.progressBarQuery).length == 0) {
+                // progress bar does not exist, add default progress bar at the beginning of body
+                const progressBarHtml: JQuery = $('<div id="link-progress-bar"></div>').attr("status", "waiting");
+                $('body').prepend(progressBarHtml);
 
-        }
+            }
+        })
 
         // attach event handler
         $(document).on("click", "a[href]", (event: JQueryEventObject) => {
