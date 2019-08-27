@@ -94,7 +94,20 @@ class LinkInstance {
             let jqHead = $(`<div>${headHtml}</div>`); // <div> dummy wrapper
 
             // remove all library code from string
-            jqHead.find("[link-js-library],[link-ignore]").remove();
+            let remove = jqHead.find("[link-js-library],[link-ignore]");
+            // find nodes that don't exist yet
+            remove.each((i, element) => {
+                // see if node exists
+                let selector: string = "";
+                selector.concat(element.nodeName);
+                // add atributes to string
+                if (element.nodeName == "script") {
+                    selector.concat("[src='", element.getAttribute("src"), "']");
+                }
+                if ($(selector).length != 0) remove = remove.not(selector);
+            });
+            // remove all nodes in remove
+            remove.remove();
 
             // history api
             history.pushState(url, document.title, url);
@@ -172,12 +185,23 @@ class LinkInstance {
     private loadBody = (data: String): void => {
         let bodyHtml = data.match(/\<body[^>]*\>([^]*)\<\/body\>/m)[0];
         let jqBody = $(`<div>${bodyHtml}</div>`);
-        jqBody.find("[link-js-library],[link-ignore]").remove();
+        let remove = jqBody.find("[link-js-library],[link-ignore]");
+        remove.each((i, element) => {
+            // see if node exists
+            let selector: string = "";
+            selector.concat(element.nodeName);
+            // add atributes to string
+            if (element.nodeName == "script") {
+                selector.concat("[src='", element.getAttribute("src"), "']");
+            }
+            if ($(selector).length != 0) remove = remove.not(selector);
+        });
+        remove.remove();
 
 
         // create temp jQuery object with html string of body
         let jqTemp: JQuery = $($("body").html());
-        console.log(jqTemp);
+        // console.log(jqTemp);
         for (let query of this.options.linkId) {
             // select query on dom
             let domElement = $(query);
@@ -198,5 +222,11 @@ class LinkInstance {
 
         // all content loaded
         $(document).trigger("pageLoad");
+    }
+
+    onLoad = (handler: Function) => {
+        $(document).one("pageLoad", event => {
+            handler(event);
+        });
     }
 }
