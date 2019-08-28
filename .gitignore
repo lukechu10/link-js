@@ -93,4 +93,8 @@ typings/
 
 dist
 
+# Gitpod
+.theia/
+.gitpod.yml
+
 # End of https://www.gitignore.io/api/node
