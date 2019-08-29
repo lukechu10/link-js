@@ -37,7 +37,7 @@ class LinkInstance {
         })
 
         // attach event handler
-        $(document).on("click", "a[href]", (event: JQueryEventObject) => {
+        $(document).on("click", "a[href]:not([target='blank'])", (event: JQueryEventObject) => {
             event.preventDefault();
             console.info("Navigation occured: ", $(event.target).attr('href'));
             this.loadPage(<string>$(event.target).attr('href'));
