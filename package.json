@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "description": "Convert traditional websites to single page apps effortlessly",
   "dependencies": {
-    "@types/jquery": "^3.3.31",
+    "@types/jquery": "^3.3.34",
     "jquery": "^3.4.1"
   },
   "devDependencies": {
     "cssnano": "^4.1.10",
-    "ts-loader": "^6.0.4",
-    "typescript": "^3.5.3",
-    "uglify-js": "^3.6.0",
-    "webpack": "^4.39.2",
-    "webpack-cli": "^3.3.7"
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "uglify-js": "^3.8.1",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

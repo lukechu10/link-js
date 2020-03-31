@@ -139,17 +139,17 @@ class LinkInstance {
                 if (this.options.waitForCss) {
                     jqHead.find("link[rel='stylesheet']").attr("onload", "LinkInstance.addCssLoaded()");
 
-                    let totalCss: number = jqHead.find("link[rel='stylesheet']").length;
+                    let totalResources: number = jqHead.find("link[rel='stylesheet']").length;
                     // mark head elements to remove
                     $("head").children().attr("link-head-old", "");
                     $("head").append(jqHead.html());
 
-                    if (totalCss == 0) {
+                    if (totalResources == 0) {
                         $(document).trigger("cssOnLoad");
                     }
 
                     $(document).on("cssOnLoad", () => {
-                        if (LinkInstance.cssLoaded == totalCss) {
+                        if (LinkInstance.cssLoaded == totalResources) {
                             // remove old head
                             $("head>[link-head-old]").remove();
                             this.loadBody(data);
